@@ -13,27 +13,27 @@ import {
   response
 } from '@loopback/rest';
 import {Llaves} from '../config/Llaves';
-import {Credenciales, Usuario} from '../models';
-import {UsuarioRepository} from '../repositories';
-import {AutenticacionService} from '../services';
+import {Credenciales, Usuario2} from '../models';
+import {Usuario2Repository} from '../repositories';
+import {AutenticacionService} from '../services/autenticacion.service';
 const fetch = require("node-fetch");
 
-export class UsuarioController {
+export class Usuario2Controller {
   constructor(
-    @repository(UsuarioRepository)
-    public usuarioRepository: UsuarioRepository,
+    @repository(Usuario2Repository)
+    public usuario2Repository: Usuario2Repository,
     @service(AutenticacionService)
     public servicioAutenticacion: AutenticacionService,
   ) { }
 
-  @post('/identificarUsuario', {
+  @post('/identificarUsuario2', {
     responses: {
       '200': {
         description: "identificacion de usuarios"
       }
     }
   })
-  async identificarUsuario(
+  async identificarUsuario2(
     @requestBody() credenciales: Credenciales
   ) {
     let u = await this.servicioAutenticacion.IdentificarUsuario(credenciales.usuario, credenciales.clave);
@@ -52,35 +52,34 @@ export class UsuarioController {
     }
   }
 
-
-  @post('/usuarios')
+  @post('/usuario2s')
   @response(200, {
-    description: 'Usuario model instance',
-    content: {'application/json': {schema: getModelSchemaRef(Usuario)}},
+    description: 'Usuario2 model instance',
+    content: {'application/json': {schema: getModelSchemaRef(Usuario2)}},
   })
   async create(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Usuario, {
-            title: 'NewUsuario',
+          schema: getModelSchemaRef(Usuario2, {
+            title: 'NewUsuario2',
             exclude: ['id'],
           }),
         },
       },
     })
-    usuario: Omit<Usuario, 'id'>,
-  ): Promise<Usuario> {
+    usuario2: Omit<Usuario2, 'id'>,
+  ): Promise<Usuario2> {
 
     let clave = this.servicioAutenticacion.GenerarClave();
     let claveCifrada = this.servicioAutenticacion.CifrarClave(clave);
-    usuario.clave = claveCifrada;
-    console.log(usuario);
+    usuario2.clave = claveCifrada;
+    console.log(usuario2);
 
-    let u = await this.usuarioRepository.create(usuario);
-    let destino = usuario.personaId.correoElectronico;
+    let u = await this.usuario2Repository.create(usuario2);
+    let destino = usuario2.correoElectronico;
     let asunto = 'Registro app Equipos Tecnologicos'
-    let mensaje = `Hola ${usuario.personaId.nombre}, su nombre de usuario es: ${usuario.user} y su contraseña asignada es: ${clave}`;
+    let mensaje = `Hola ${usuario2.nombre}, su nombre de usuario es: ${usuario2.correoElectronico} y su contraseña asignada es: ${clave}`;
     fetch(`${Llaves.urlServicioNotificaciones}/email?correo_destino=${destino}&asunto=${asunto}&mensaje=${mensaje}`)
       .then((data: any) => {
         console.log(data);
@@ -88,104 +87,104 @@ export class UsuarioController {
     return u;
   }
 
-  @get('/usuarios/count')
+  @get('/usuario2s/count')
   @response(200, {
-    description: 'Usuario model count',
+    description: 'Usuario2 model count',
     content: {'application/json': {schema: CountSchema}},
   })
   async count(
-    @param.where(Usuario) where?: Where<Usuario>,
+    @param.where(Usuario2) where?: Where<Usuario2>,
   ): Promise<Count> {
-    return this.usuarioRepository.count(where);
+    return this.usuario2Repository.count(where);
   }
 
-  @get('/usuarios')
+  @get('/usuario2s')
   @response(200, {
-    description: 'Array of Usuario model instances',
+    description: 'Array of Usuario2 model instances',
     content: {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(Usuario, {includeRelations: true}),
+          items: getModelSchemaRef(Usuario2, {includeRelations: true}),
         },
       },
     },
   })
   async find(
-    @param.filter(Usuario) filter?: Filter<Usuario>,
-  ): Promise<Usuario[]> {
-    return this.usuarioRepository.find(filter);
+    @param.filter(Usuario2) filter?: Filter<Usuario2>,
+  ): Promise<Usuario2[]> {
+    return this.usuario2Repository.find(filter);
   }
 
-  @patch('/usuarios')
+  @patch('/usuario2s')
   @response(200, {
-    description: 'Usuario PATCH success count',
+    description: 'Usuario2 PATCH success count',
     content: {'application/json': {schema: CountSchema}},
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Usuario, {partial: true}),
+          schema: getModelSchemaRef(Usuario2, {partial: true}),
         },
       },
     })
-    usuario: Usuario,
-    @param.where(Usuario) where?: Where<Usuario>,
+    usuario2: Usuario2,
+    @param.where(Usuario2) where?: Where<Usuario2>,
   ): Promise<Count> {
-    return this.usuarioRepository.updateAll(usuario, where);
+    return this.usuario2Repository.updateAll(usuario2, where);
   }
 
-  @get('/usuarios/{id}')
+  @get('/usuario2s/{id}')
   @response(200, {
-    description: 'Usuario model instance',
+    description: 'Usuario2 model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(Usuario, {includeRelations: true}),
+        schema: getModelSchemaRef(Usuario2, {includeRelations: true}),
       },
     },
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(Usuario, {exclude: 'where'}) filter?: FilterExcludingWhere<Usuario>
-  ): Promise<Usuario> {
-    return this.usuarioRepository.findById(id, filter);
+    @param.filter(Usuario2, {exclude: 'where'}) filter?: FilterExcludingWhere<Usuario2>
+  ): Promise<Usuario2> {
+    return this.usuario2Repository.findById(id, filter);
   }
 
-  @patch('/usuarios/{id}')
+  @patch('/usuario2s/{id}')
   @response(204, {
-    description: 'Usuario PATCH success',
+    description: 'Usuario2 PATCH success',
   })
   async updateById(
     @param.path.string('id') id: string,
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(Usuario, {partial: true}),
+          schema: getModelSchemaRef(Usuario2, {partial: true}),
         },
       },
     })
-    usuario: Usuario,
+    usuario2: Usuario2,
   ): Promise<void> {
-    await this.usuarioRepository.updateById(id, usuario);
+    await this.usuario2Repository.updateById(id, usuario2);
   }
 
-  @put('/usuarios/{id}')
+  @put('/usuario2s/{id}')
   @response(204, {
-    description: 'Usuario PUT success',
+    description: 'Usuario2 PUT success',
   })
   async replaceById(
     @param.path.string('id') id: string,
-    @requestBody() usuario: Usuario,
+    @requestBody() usuario2: Usuario2,
   ): Promise<void> {
-    await this.usuarioRepository.replaceById(id, usuario);
+    await this.usuario2Repository.replaceById(id, usuario2);
   }
 
-  @del('/usuarios/{id}')
+  @del('/usuario2s/{id}')
   @response(204, {
-    description: 'Usuario DELETE success',
+    description: 'Usuario2 DELETE success',
   })
   async deleteById(@param.path.string('id') id: string): Promise<void> {
-    await this.usuarioRepository.deleteById(id);
+    await this.usuario2Repository.deleteById(id);
   }
 }

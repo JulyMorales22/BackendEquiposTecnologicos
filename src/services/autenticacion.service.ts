@@ -1,8 +1,8 @@
 import { /* inject, */ BindingScope, injectable} from '@loopback/core';
 import {repository} from '@loopback/repository';
 import {Llaves} from '../config/Llaves';
-import {Usuario} from '../models';
-import {UsuarioRepository} from '../repositories';
+import {Usuario2} from '../models';
+import {Usuario2Repository} from '../repositories';
 const generador = require("password-generator");
 const cryptoJs = require("crypto-js");
 const jwt = require("jsonwebtoken");
@@ -11,8 +11,8 @@ const jwt = require("jsonwebtoken");
 @injectable({scope: BindingScope.TRANSIENT})
 export class AutenticacionService {
   constructor(
-    @repository(UsuarioRepository)
-    public usuarioRepository: UsuarioRepository
+    @repository(Usuario2Repository)
+    public usuario2Repository: Usuario2Repository
   ) { }
 
   /*
@@ -32,7 +32,7 @@ export class AutenticacionService {
 
   IdentificarUsuario(usuario: string, clave: string) {
     try {
-      let u = this.usuarioRepository.findOne({where: {user: usuario, clave: clave}});
+      let u = this.usuario2Repository.findOne({where: {correoElectronico: usuario, clave: clave}});
       return u;
     } catch {
       return false;
@@ -40,12 +40,12 @@ export class AutenticacionService {
 
   }
 
-  GenerarTokenJWT(usuario: Usuario) {
+  GenerarTokenJWT(usuario2: Usuario2) {
     let token = jwt.sign({
       data: {
-        id: usuario.id,
-        correo: usuario.personaId.correoElectronico,
-        nombre: usuario.personaId.nombre + " " + usuario.personaId.apellidos
+        id: usuario2.id,
+        correo: usuario2.correoElectronico,
+        nombre: usuario2.nombre + " " + usuario2.apellidos
       }
 
     }, Llaves.claveJWT)

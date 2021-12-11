@@ -6,3 +6,4 @@ export * from './menu.model';
 export * from './producto.model';
 export * from './pedido.model';
 export * from './credenciales.model';
+export * from './usuario2.model';

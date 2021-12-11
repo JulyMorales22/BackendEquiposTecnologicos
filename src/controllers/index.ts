@@ -13,3 +13,4 @@ export * from './usuario-pedido.controller';
 export * from './pedido-producto.controller';
 export * from './producto.controller';
 export * from './pedido.controller';
+export * from './usuario2.controller';
